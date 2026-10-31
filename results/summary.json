@@ -1,0 +1,24 @@
+{
+  "acra_release": "2026-10-14",
+  "fnb_entities": 99634,
+  "with_valid_postcode": 97571,
+  "located_in_a_planning_area": 7132,
+  "areas_ranked": 1,
+  "survival_cohort": [
+    2019,
+    2022
+  ],
+  "recent_years": [
+    2023,
+    2025
+  ],
+  "survival_prior_strength": 247731.4,
+  "default_weights": {
+    "residents_per_fnb": 0.35,
+    "median_household_income": 0.25,
+    "survival_shrunk_rate": 0.25,
+    "mrt_stations": 0.15
+  },
+  "spearman_acra_vs_nea_all_areas": 1.0,
+  "spearman_acra_vs_nea_residential": 1.0
+}
