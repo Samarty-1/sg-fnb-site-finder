@@ -9,6 +9,7 @@ import matplotlib
 matplotlib.use("Agg")
 import matplotlib.pyplot as plt  # noqa: E402
 import pandas as pd  # noqa: E402
+from matplotlib import patheffects  # noqa: E402
 from matplotlib.colors import LinearSegmentedColormap, Normalize  # noqa: E402
 from matplotlib.patches import Polygon as MplPolygon  # noqa: E402
 from shapely.geometry import shape  # noqa: E402
@@ -45,9 +46,11 @@ def score_map(ranking: pd.DataFrame) -> None:
     for _, r in ranking.head(5).iterrows():
         f = next(x for x in g["features"] if x["properties"]["PLN_AREA_N"].upper() == r["area"])
         c = shape(f["geometry"]).representative_point()
+        # Labels spill past small polygons onto grey and pale fills, so use dark text
+        # with a white halo, which reads on every background.
         ax.annotate(f"{int(r['rank'])}. {r['area'].title()}", (c.x, c.y), ha="center", va="center",
-                    fontsize=8.5, color="white" if (r["score"] - lo) / (hi - lo) > 0.55 else INK,
-                    fontweight="bold")
+                    fontsize=8.5, color=INK, fontweight="bold",
+                    path_effects=[patheffects.withStroke(linewidth=2.5, foreground="white")])
     ax.autoscale_view()
     ax.set_aspect("equal")
     ax.axis("off")

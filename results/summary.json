@@ -2,8 +2,10 @@
   "acra_release": "2026-10-14",
   "fnb_entities": 99634,
   "with_valid_postcode": 97571,
-  "located_in_a_planning_area": 7132,
-  "areas_ranked": 1,
+  "located_in_a_planning_area": 81829,
+  "in_scope_live_or_registered_since_2019": 37973,
+  "in_scope_located": 37811,
+  "areas_ranked": 29,
   "survival_cohort": [
     2019,
     2022
@@ -12,13 +14,13 @@
     2023,
     2025
   ],
-  "survival_prior_strength": 247731.4,
+  "survival_prior_strength": 925.5,
   "default_weights": {
     "residents_per_fnb": 0.35,
     "median_household_income": 0.25,
     "survival_shrunk_rate": 0.25,
     "mrt_stations": 0.15
   },
-  "spearman_acra_vs_nea_all_areas": 1.0,
-  "spearman_acra_vs_nea_residential": 1.0
+  "spearman_acra_vs_nea_all_areas": 0.927,
+  "spearman_acra_vs_nea_residential": 0.804
 }

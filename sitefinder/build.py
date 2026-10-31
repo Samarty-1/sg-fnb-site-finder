@@ -19,6 +19,10 @@ class Coverage:
     entities: int
     with_valid_postcode: int
     located: int
+    # Only live businesses and those registered from 2019 on feed any metric, so only
+    # their postcodes are geocoded (scripts/geocode.py). Coverage that matters is of these.
+    in_scope: int
+    in_scope_located: int
 
 
 def locate_entities(fnb: pd.DataFrame, locations: pd.DataFrame, areas: PlanningAreas) -> tuple[pd.DataFrame, Coverage]:
@@ -27,7 +31,9 @@ def locate_entities(fnb: pd.DataFrame, locations: pd.DataFrame, areas: PlanningA
     df["area"] = None
     has = df["lat"].notna()
     df.loc[has, "area"] = areas.locate_frame(df.loc[has])
-    cov = Coverage(len(fnb), int(valid.sum()), int(df["area"].notna().sum()))
+    scope = df["is_live"] | (df["registration_date"].dt.year >= SURVIVAL_COHORT[0])
+    cov = Coverage(len(fnb), int(valid.sum()), int(df["area"].notna().sum()),
+                   int(scope.sum()), int((scope & df["area"].notna()).sum()))
     return df, cov
 
 

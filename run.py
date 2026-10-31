@@ -32,6 +32,8 @@ def main() -> None:
         "fnb_entities": coverage.entities,
         "with_valid_postcode": coverage.with_valid_postcode,
         "located_in_a_planning_area": coverage.located,
+        "in_scope_live_or_registered_since_2019": coverage.in_scope,
+        "in_scope_located": coverage.in_scope_located,
         "areas_ranked": len(ranking),
         "survival_cohort": list(SURVIVAL_COHORT),
         "recent_years": list(metrics.attrs["recent_years"]),
