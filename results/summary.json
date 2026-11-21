@@ -14,7 +14,7 @@
     2023,
     2025
   ],
-  "survival_prior_strength": 925.5,
+  "survival_prior_strength": 129.8,
   "default_weights": {
     "residents_per_fnb": 0.35,
     "median_household_income": 0.25,

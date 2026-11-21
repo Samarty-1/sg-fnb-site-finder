@@ -114,6 +114,27 @@ def test_shrinkage_pulls_small_areas_harder():
     assert r.loc[0, "ci_high"] - r.loc[0, "ci_low"] > r.loc[1, "ci_high"] - r.loc[1, "ci_low"]
 
 
+@pytest.mark.parametrize("true_strength", [100, 300, 900])
+def test_prior_strength_recovers_a_known_spread_with_unequal_cohorts(true_strength):
+    """Areas of very different size (as in the real data: 8 to 749 companies) whose
+    true rates come from a known Beta prior. The fitted strength should land near the
+    truth. The old estimator subtracted unweighted noise from a weighted spread and
+    reported 360 for a true 100, and ~250,000 (complete pooling) for 300 or 900."""
+    from sitefinder.stats import beta_binomial_prior
+
+    rng = np.random.default_rng(1)
+    trials = np.array([8, 34, 45, 60, 70, 99, 120, 133, 146, 166, 180, 200, 230, 277,
+                       300, 340, 420, 500, 749] * 2)
+    mean = 0.54
+    a, b = mean * true_strength, (1 - mean) * true_strength
+    fitted = []
+    for _ in range(600):
+        successes = rng.binomial(trials, rng.beta(a, b, len(trials)))
+        fa, fb = beta_binomial_prior(successes, trials)
+        fitted.append(fa + fb)
+    assert np.median(fitted) == pytest.approx(true_strength, rel=0.25)
+
+
 def test_area_with_no_cohort_gets_the_prior():
     r = shrunk_rates(np.array([0, 50, 60, 55]), np.array([0, 100, 100, 100]))
     assert np.isnan(r.loc[0, "raw_rate"])

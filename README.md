@@ -6,7 +6,7 @@ competition there is, how much residents have to spend, how often new F&B busine
 there survive, and how much passing trade the MRT brings.** All inputs are public
 data. A dashboard lets you set your own weights.
 
-Built with Python, pandas, Shapely and Streamlit. 19 tests, including the dashboard.
+Built with Python, pandas, Shapely and Streamlit. 22 tests, including the dashboard.
 
 ![Score by planning area](docs/score_map.png)
 
@@ -19,19 +19,20 @@ With the default weights (competition 35%, spending power 25%, survival 25%, MRT
 | 1 | Bukit Panjang | 469 | $12,722 | 11 |
 | 2 | Bukit Timah | 191 | $30,469 | 6 |
 | 3 | Sengkang | 438 | $13,237 | 15 |
-| 4 | Choa Chu Kang | 456 | $13,104 | 8 |
-| 5 | Punggol | 386 | $12,591 | 17 |
+| 4 | Punggol | 386 | $12,591 | 17 |
+| 5 | Tampines | 278 | $12,796 | 6 |
 
 - **The north-west and north-east HDB towns are under-served.** Bukit Panjang, Choa
   Chu Kang and Sengkang each have over 430 residents for every F&B business. Geylang
-  has 52 and Outram 12.
+  has 52 and Outram 12. Choa Chu Kang would be third without the survival factor; it
+  is sixth because its new F&B companies survive least often of the six (50%).
 - **Bukit Timah is in the top five for the opposite reason.** It has fairly heavy
   competition, but household income is second only to Tanglin.
-- **The top three don't depend on the weights.** Under 5,000 random weightings, Bukit
-  Panjang is in the top five 80% of the time, Bukit Timah 73% and Sengkang 63%.
-  Tampines, sixth with the default weights, makes the top five under only 13% of them.
-  If your priorities differ from the defaults, those three are still the safest
-  shortlist.
+- **The top three hold up under most weightings.** Under 5,000 random weightings, Bukit
+  Panjang is in the top five 80% of the time, Bukit Timah 75% and Sengkang 67%.
+  Tampines, fifth with the default weights, makes the top five under only 16% of them,
+  so its place depends on the defaults. If your priorities differ, the first three
+  are the safest shortlist.
 
 ![What puts the top 10 there](docs/top10_breakdown.png)
 
@@ -64,21 +65,37 @@ eating establishments (2016, the latest published):
   would suggest. 46% of its live F&B businesses are registered in five buildings,
   led by the Food Xchange @ Admiralty food factory (262 businesses). These are central
   kitchens and caterers, not shops, so Sembawang's competition looks worse than it is.
-- The top five areas have no such factory cluster. In four of them the five busiest
-  postcodes hold 7% to 12% of the businesses. In Bukit Timah they hold 21%, but these
-  are food malls where outlets really trade (Beauty World Centre, Bukit Timah Shopping
-  Centre, The Grandstand), and Bukit Timah has slightly fewer registrations than its
-  outlet count would suggest (0.86 times).
+- In three of the top five, the five busiest postcodes hold 7% to 12% of the
+  businesses. In Bukit Timah they hold 21%, but these are food malls where outlets
+  really trade (Beauty World Centre, Bukit Timah Shopping Centre, The Grandstand), and
+  Bukit Timah has slightly fewer registrations than its outlet count would suggest
+  (0.86 times).
+- **Tampines has a smaller cluster of its own.** A third of its live F&B businesses
+  (346 of 1,045) are registered at industrial postcodes (48xxxx), mostly caterers and
+  the head offices of chains whose outlets trade elsewhere ("Western Food (Yishun
+  317)"). Even so, Tampines has fewer registrations than its 2016 outlet count would
+  suggest (0.80 times), so its competition is not overstated.
 - Punggol has 1.7 times its 2016 outlet count, which fits a town that has grown a lot
   since 2016.
 
-**Survival hardly tells the areas apart.** 54% of the 6,562 F&B companies registered
-in these areas in 2019–2022 are still live. Small areas look extreme by chance (Tengah:
-6 of 8 still live, 75%), so each area's rate is pulled toward the island-wide rate by
-how little data it has (beta-binomial shrinkage). After that, every area sits between
-**53% and 57%**, and their 90% intervals mostly overlap. Because each factor is turned
-into a percentile, that small spread still moves the score. Set survival to zero in
-the dashboard if you would rather ignore it.
+**Survival separates the areas, but only modestly.** 54% of the 6,562 F&B companies
+registered in these areas in 2019–2022 are still live. Small areas look extreme by
+chance (Tengah: 6 of 8 still live, 75%), so each area's rate is pulled toward the
+island-wide rate by how little data it has (beta-binomial shrinkage, which brings
+Tengah to 55%). After that, areas range from **50% (Ang Mo Kio) to 62% (Sembawang)**.
+The differences are real overall (a chi-square test across the 29 areas gives
+p < 0.001), but only 3 areas have a 90% interval that excludes 54%, and Sembawang's
+top rate is partly its food-factory caterers (69% still live there, 60% elsewhere in
+Sembawang). Because each factor is turned into a percentile, small gaps still move
+the score. Set survival to zero in the dashboard if you would rather ignore it.
+
+*Corrected 22 Nov 2026:* the first version estimated how much areas differ with a
+formula that overstated the sampling noise, which pulled every area almost all the
+way to 54% (53% to 57%) and made survival look nearly uninformative. The fix, a
+simulation test that the estimate recovers a known spread, and the reruns are in
+`sitefinder/stats.py` and `tests/test_sitefinder.py`. The top three did not change.
+Punggol and Tampines moved up to fourth and fifth, and Choa Chu Kang moved down to
+sixth.
 
 **Coverage.** 37,973 businesses are live or were registered since 2019 (the only ones
 any factor uses). **99.6% of them were placed in a planning area.** Older closed

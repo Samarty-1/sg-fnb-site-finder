@@ -11,18 +11,31 @@ def beta_binomial_prior(successes: np.ndarray, trials: np.ndarray) -> tuple[floa
 
     The spread of observed rates is partly real differences between areas and partly
     noise from small samples. Subtracting the expected noise leaves the between-area
-    variance, which sets how strongly each area is pulled toward the overall rate."""
+    variance, which sets how strongly each area is pulled toward the overall rate.
+
+    The spread is weighted by cohort size, so the noise subtracted must be weighted
+    the same way. For weights w = n / N around the pooled rate mu,
+
+        E[sum w (p - mu)^2] = tau^2 (1 - sum w^2) + mu (1 - mu) (K - 1) / N
+
+    where tau^2 is the between-area variance and K the number of areas. Using the
+    unweighted mean of 1/n instead (as this function once did) overstates the noise
+    whenever cohort sizes differ: on the real areas (8 to 749 companies) it put the
+    prior strength at 925 instead of 130, pulling every area most of the way to the
+    island-wide rate. tests/test_sitefinder.py checks the estimate against simulated
+    areas with a known spread."""
     successes, trials = np.asarray(successes, float), np.asarray(trials, float)
     keep = trials > 0
     s, n = successes[keep], trials[keep]
     if len(n) < 3:
         raise ValueError("need at least 3 areas with data to estimate how much areas differ")
     p = s / n
-    mean = s.sum() / n.sum()
-    weights = n / n.sum()
+    total = n.sum()
+    mean = s.sum() / total
+    weights = n / total
     observed_var = np.sum(weights * (p - mean) ** 2)
-    noise_var = mean * (1 - mean) * np.mean(1 / n)
-    between = max(observed_var - noise_var, 1e-6)
+    noise_var = mean * (1 - mean) * (len(n) - 1) / total
+    between = max((observed_var - noise_var) / (1 - np.sum(weights ** 2)), 1e-6)
     strength = max(mean * (1 - mean) / between - 1, 1.0)  # alpha + beta
     return mean * strength, (1 - mean) * strength
 
